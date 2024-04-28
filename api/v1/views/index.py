@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """index holds endpoint to connect to API"""
 from api.v1.views import app_views
-from models import storage
 from flask import Flask, Blueprint, jsonify
+from models import storage
 
 
 hbnb_options = {
