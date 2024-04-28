@@ -2,6 +2,7 @@
 """
 A new view for 'States' - states.py
 Handles all default RESTFul API actions
+GET, POST, DELETE, PUT
 """
 
 from api.v1.views import app_views
@@ -30,23 +31,30 @@ def get_spec_state(state_id):
 @app_views.route('/states/<string:state_id>', methods=['DELETE'],
                  strict_slashes=False)
 def delete_state(state_id):
-    """deletes a state based on its state_id"""
-    state = storage.get("State", state_id)
-    if state is None:
+    """
+    deletes a state object using state id
+    DELETE /api/v1/states/<state_id>
+    """
+    state_del = storage.get("State", state_id)
+    if state_del is None:
         abort(404)
-    state.delete()
+    state_del.delete()
     storage.save()
-    return (jsonify({}))
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/states/', methods=['POST'], strict_slashes=False)
 def post_state():
-    """create a new state"""
+    """
+    creates a new state
+    State: POST /api/v1/states
+    """
     if not request.get_json():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    if 'name' not in request.get_json():
+    data = request.get_json()
+    if 'name' not in data:
         return make_response(jsonify({'error': 'Missing name'}), 400)
-    state = State(**request.get_json())
+    state = State(**data)
     state.save()
     return make_response(jsonify(state.to_dict()), 201)
 
