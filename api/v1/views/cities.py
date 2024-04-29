@@ -61,7 +61,7 @@ def post_a_city(state_id):
     state = storage.get("State", state_id)
     if state is None:
         abort(404)
-    if not request.is_json:
+    if not request.get_json():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     data = request.get_json()
     if 'name' not in data:
