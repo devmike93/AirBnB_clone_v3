@@ -110,6 +110,7 @@ def create_place(city_id):
         return make_response(jsonify({'error': str(e)}), 500)
 
 """
+ADVANCED
 @app_views.route('/places_search', methods=['POST'], strict_slashes=False)
 def update_place_search():
     """"""
