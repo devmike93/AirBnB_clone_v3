@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """states.py"""
 
-from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
+from api.v1.views import app_views
 from models import storage
 from models.amenity import Amenity
 
@@ -13,7 +13,7 @@ def get_amenities():
     retrieves information for all amenities
     GET /api/v1/amenities
     """
-    amenities = [amenity.to_dict() for amenity in storage.all(Amenity).values()]
+    amenities = [amenity.to_dict() for amenity in storage.all("Amenity").values()]
     return jsonify(amenities)
 
 
@@ -44,22 +44,6 @@ def delete_one_amenity(amenity_id):
     storage.save()
     return (jsonify({}))
 
-
-@app_views.route('/amenities', methods=['POST'], strict_slashes=False)
-def create_amenity():
-    """
-    creates a new amenity
-    POST /api/v1/amenities
-    """
-    if not request.get_json():
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    if 'name' not in request.get_json():
-        return make_response(jsonify({'error': 'Missing name'}), 400)
-    amenity = Amenity(**request.get_json())
-    amenity.save()
-    return make_response(jsonify(amenity.to_dict()), 201)
-
-
 @app_views.route('/amenities/<string:amenity_id>', methods=['PUT'],
                  strict_slashes=False)
 def update_amenity(amenity_id):
@@ -81,3 +65,18 @@ def update_amenity(amenity_id):
         return make_response(jsonify({'error': str(e)}), 400)
     amenity.save()
     return jsonify(amenity.to_dict())
+
+@app_views.route('/amenities', methods=['POST'], strict_slashes=False)
+def create_amenity():
+    """
+    creates a new amenity
+    POST /api/v1/amenities
+    """
+    if not request.get_json():
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+    if 'name' not in request.get_json():
+        return make_response(jsonify({'error': 'Missing name'}), 400)
+    amenity = Amenity(**request.get_json())
+    amenity.save()
+    return make_response(jsonify(amenity.to_dict()), 201)
+
