@@ -113,3 +113,35 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+    
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "not testing file storage")
+    def test_get(self):
+        """Test that the get method properly retrieves objects"""
+        storage = FileStorage()
+        # Test case: retrieving object with invalid class name and id
+        self.assertIs(storage.get("trash", "trash"), None)
+        # Test case: retrieving object with invalid class name
+        self.assertIs(storage.get("User", "trash"), None)
+        # Test case: retrieving an existing object
+        new_user = User()
+        new_user.save()
+        self.assertIs(storage.get("User", new_user.id), new_user)
+
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
+                     "Not testing file storage")
+    def test_count(self):
+        """Test that the count method returns the correct number of objects"""
+        storage = FileStorage()
+        # Test case: count objects of a specific class
+        state_len = len(storage.all("State"))
+        self.assertEqual(storage.count("State"), state_len)
+        # Test case: count all objects
+        initial_length = len(storage.all())
+        self.assertEqual(storage.count(), initial_length)
+        # Test case: count all objects after adding a new object
+        new_state = State()
+        new_state.save()
+        self.assertEqual(storage.count(), initial_length + 1)
+        # Test case: count objects of a specific class after adding a new object
+        self.assertEqual(storage.count("State"), state_len + 1)
